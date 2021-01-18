@@ -14,14 +14,20 @@
             <!-- 采用JDBC方式对数据库事务进行commit/rollback -->
             <transactionManager type="JDBC"></transactionManager>
             <!-- 采用Mybatis自带的连接池方式管理数据库连接 -->
-            <dataSource type="POOLED">
+<!--            <dataSource type="POOLED">-->
+            <!-- mybatis和druid的整合 -->
+            <dataSource type="com.me.oa.datasource.DruidDataSourceFactory">
                 <!-- 5.0的mysql就没有cj-->
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
                 <!-- characterEncoding和serverTimezone要写对 -->
                 <property name="url"
                           value="jdbc:mysql://localhost:3306/me-oa?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true"/>
                 <property name="username" value="root"/>
                 <property name="password" value="1q1q1q1q"/>
+                <!-- 连接池初始连接数 -->
+                <property name="initialSize" value="10"/>
+                <!-- 连接池最大连接数 -->
+                <property name="maxActive" value="20"/>
             </dataSource>
         </environment>
     </environments>
