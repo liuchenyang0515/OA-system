@@ -13,7 +13,7 @@
         <environment id="dev">
             <!-- 采用JDBC方式对数据库事务进行commit/rollback -->
             <transactionManager type="JDBC"></transactionManager>
-            <!-- 采用连接池方式管理数据库连接 -->
+            <!-- 采用Mybatis自带的连接池方式管理数据库连接 -->
             <dataSource type="POOLED">
                 <!-- 5.0的mysql就没有cj-->
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
