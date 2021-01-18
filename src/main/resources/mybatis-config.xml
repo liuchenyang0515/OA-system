@@ -24,6 +24,8 @@
                 <property name="password" value="1q1q1q1q"/>
             </dataSource>
         </environment>
-
     </environments>
+    <mappers>
+        <mapper resource="mappers/test.xml"></mapper>
+    </mappers>
 </configuration>
