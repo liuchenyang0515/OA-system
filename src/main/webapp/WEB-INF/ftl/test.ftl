@@ -5,6 +5,6 @@
     <title>Title</title>
 </head>
 <body>
-    I'am test page!
+${result}
 </body>
 </html>

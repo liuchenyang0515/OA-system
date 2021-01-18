@@ -34,16 +34,32 @@
             <artifactId>druid</artifactId>
             <version>1.2.4</version>
         </dependency>
+        <!-- Junit4 单元测试框架 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <!-- 只参与Maven Test，不进行发布 -->
+            <scope>test</scope>
         </dependency>
         <!-- Logback日志输出组件 -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
+        </dependency>
+        <!-- Freemarker依赖 -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.30</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <!-- 依赖只参与编译测试，不进行发布 -->
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <!--

@@ -4,7 +4,8 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.Test;
+
+
 
 import java.io.IOException;
 import java.io.Reader;
@@ -50,7 +51,6 @@ public class MybatisUtils {
      * @param func 要执行的写操作代码块
      * @return 写操作后返回的结果
      */
-    @Test
     public static Object executeUpdate(Function<SqlSession, Object> func) {
         // 写操作和查询操作区别就是对事物的控制。这里在上一步查询基础上增加了事务的控制
         SqlSession sqlSession = sqlSessionFactory.openSession(false); // 不自动提交
