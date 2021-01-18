@@ -8,6 +8,69 @@
     <artifactId>oa</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <name>aliyun</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <!-- mybatis框架 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+        <!-- MySQL 8 JDBC驱动 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.22</version>
+        </dependency>
+        <!-- Druid数据库连接池 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <!-- Logback日志输出组件 -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+    </dependencies>
+    <!--
+        通过 pom 设置 Maven 通过 JDK 1.8 进行编译 ——maven-compiler-plugin插件
+        方式一
+    -->
+    <!--    <build>-->
+    <!--        <plugins>-->
+    <!--            <plugin>-->
+    <!--                &lt;!&ndash; 利用Maven编译插件将编译级别提高至1.8，解决lambda表达式错误 &ndash;&gt;-->
+    <!--                <groupId>org.apache.maven.plugins</groupId>-->
+    <!--                &lt;!&ndash; maven-compiler-plugin是Maven自带的编译插件 &ndash;&gt;-->
+    <!--                <artifactId>maven-compiler-plugin</artifactId>-->
+    <!--                <version>3.8.0</version>-->
+    <!--                <configuration>-->
+    <!--                    &lt;!&ndash; 检查源码采用1.8规则，默认为1.5 &ndash;&gt;-->
+    <!--                    <source>1.8</source>-->
+    <!--                    &lt;!&ndash; 按1.8规则生成字节码 &ndash;&gt;-->
+    <!--                    <target>1.8</target>-->
+    <!--                </configuration>-->
+    <!--            </plugin>-->
+    <!--        </plugins>-->
+    <!--    </build>-->
+    <!--
+        通过 pom 设置 Maven 通过 JDK 1.8 进行编译 ——maven-compiler-plugin插件
+        方式二，创建工程默认添加
+     -->
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

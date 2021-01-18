@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!-- 驼峰命名转换,goods_id=>goodsId，这样能对应实体类-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!-- 可以从这里default切换测试和生产环境-->
+    <environments default="dev">
+        <environment id="dev">
+            <!-- 采用JDBC方式对数据库事务进行commit/rollback -->
+            <transactionManager type="JDBC"></transactionManager>
+            <!-- 采用连接池方式管理数据库连接 -->
+            <dataSource type="POOLED">
+                <!-- 5.0的mysql就没有cj-->
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <!-- characterEncoding和serverTimezone要写对 -->
+                <property name="url"
+                          value="jdbc:mysql://localhost:3306/me-oa?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true"/>
+                <property name="username" value="root"/>
+                <property name="password" value="1q1q1q1q"/>
+            </dataSource>
+        </environment>
+
+    </environments>
+</configuration>
