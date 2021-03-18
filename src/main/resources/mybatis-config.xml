@@ -17,7 +17,11 @@
 <!--            <dataSource type="POOLED">-->
             <!-- mybatis和druid的整合 -->
             <dataSource type="com.me.oa.datasource.DruidDataSourceFactory">
-                <!-- 5.0的mysql就没有cj-->
+                <!-- 5.0的mysql就没有cj
+                如果是默认连接池POOLOED，这里就是<property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                这里是连接池是druid，改为<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+                因为DruidDataSource里面属性名已经规定死了，必须这么写
+                -->
                 <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
                 <!-- characterEncoding和serverTimezone要写对 -->
                 <property name="url"
@@ -32,6 +36,7 @@
         </environment>
     </environments>
     <mappers>
+        <!-- 加上这个mapper配置，否则查询找不到对应语句 -->
         <mapper resource="mappers/test.xml"></mapper>
     </mappers>
 </configuration>
