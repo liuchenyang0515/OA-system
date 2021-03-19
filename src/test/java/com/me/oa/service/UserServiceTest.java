@@ -1,7 +1,10 @@
 package com.me.oa.service;
 
+import com.me.oa.entity.Node;
 import com.me.oa.entity.User;
 import org.junit.Test;
+
+import java.util.List;
 
 public class UserServiceTest {
     private UserService userService = new UserService();
@@ -23,5 +26,11 @@ public class UserServiceTest {
         // 用户名和密码都正确
         User user = userService.checkLogin("m8", "test");
         System.out.println(user);
+    }
+
+    @Test
+    public void selectNodeByUserId() {
+        List<Node> nodeList = userService.selectNodeByUserId(2l);
+        System.out.println(nodeList);
     }
 }

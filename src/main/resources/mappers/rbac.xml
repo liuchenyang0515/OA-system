@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rbacmapper">
+    <!-- 按照用户id获取指定功能节点 -->
+    <!--
+        如何获取编号为1的用户拥有哪些功能？
+        三表关联查询
+        如果一个用户有多种角色，而业务岗角色对应的node_id为123，管理岗角色对应node_id就是1234，那么导致这个用户会有重复的node_id模块，
+        当时管理岗的时候，可以请假审批，是业务岗角色的时候，就没有请假审批模块的权限。筛选出来就是1122334，所以去重
+    -->
+    <select id="selectNodeByUserId" parameterType="long" resultType="com.me.oa.entity.Node">
+        SELECT DISTINCT n.*
+        FROM sys_role_user ru,
+             sys_role_node rn,
+             sys_node n
+        WHERE ru.role_id = rn.role_id
+          AND user_id = #{value}
+          AND rn.node_id = n.node_id
+        ORDER BY n.node_code
+    </select>
+</mapper>

@@ -1,11 +1,16 @@
 package com.me.oa.service;
 
+import com.me.oa.dao.RbacDao;
 import com.me.oa.dao.UserDao;
+import com.me.oa.entity.Node;
 import com.me.oa.entity.User;
 import com.me.oa.service.exception.BussinessException;
 
+import java.util.List;
+
 public class UserService {
     private UserDao userDao = new UserDao();
+    private RbacDao rbacDao = new RbacDao();
 
     /**
      * 根据前台输入进行登录校验
@@ -25,5 +30,10 @@ public class UserService {
             throw new BussinessException("L002", "密码错误");
         }
         return user;
+    }
+
+    public List<Node> selectNodeByUserId(Long userId) {
+        List<Node> nodeList = rbacDao.selectNodeByUserId(userId);
+        return nodeList;
     }
 }
