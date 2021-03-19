@@ -61,6 +61,11 @@
             <!-- 依赖只参与编译测试，不进行发布 -->
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.73</version>
+        </dependency>
     </dependencies>
     <!--
         通过 pom 设置 Maven 通过 JDK 1.8 进行编译 ——maven-compiler-plugin插件
