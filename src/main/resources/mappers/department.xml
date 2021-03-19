@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 1.namespace要和包名类名一致 -->
+<mapper namespace="com.me.oa.dao.DepartmentDao">
+    <!--
+        2.select的id一定要与我们的方法名一致
+        3.parameterType和接口方法参数类型一致
+        4.resultType和接口方法返回值类型一致
+     -->
+    <select id="selectById" parameterType="long" resultType="com.me.oa.entity.Department">
+        select *
+        from adm_department
+        where department_id = #{value}
+    </select>
+</mapper>
