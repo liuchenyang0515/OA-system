@@ -51,7 +51,9 @@
             dataType: "json",
             success: (json) => {
                 if (json.code == "0") {
-                    layui.layer.msg("登录成功");
+                    // layui.layer.msg("登录成功");
+                    // 跳转url
+                    window.location.href = json.redirect_url;
                 } else {
                     layui.layer.msg(json.message);
                 }
