@@ -30,15 +30,35 @@
         <h1 style="text-align: center;margin-bottom: 20px">我的办公OA系统</h1>
         <form class="layui-form">
             <div class="layui-form-item">
-                <input type="text" id="username" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                <input type="text" id="username" lay-verify="required" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
             </div>
             <div class="layui-form-item">
-                <input type="password" id="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                <input type="password" id="password" lay-verify="required" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
             </div>
             <div class="layui-form-item">
                 <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="login">登录</button>
             </div>
         </form>
     </div>
+<script src="/resources/layui/layui.all.js"></script>
+<script>
+    layui.form.on("submit(login)", (data) => { // data参数包含了当前表单的数据
+        console.log(data);
+        layui.$.ajax({
+            url: "check_login",
+            data: data.field,
+            type: "post",
+            dataType: "json",
+            success: (json) => {
+                if (json.code == "0") {
+                    layui.layer.msg("登录成功");
+                } else {
+                    layui.layer.msg(json.message);
+                }
+            }
+        })
+        return false; // submit提交事件返回true则表单提交，false则阻止表单提交
+    })
+</script>
 </body>
 </html>
