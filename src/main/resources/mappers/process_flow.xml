@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.me.oa.dao.ProcessFlowDao">
+    <!--
+    主键回填
+    useGeneratedKeys="true" 使用数据库的自动生成键
+    keyProperty="processId" 实体类的processId属性对应数据库主键
+    keyColumn="process_id" 数据库主键字段是process_id
+    -->
+    <insert id="insert" parameterType="com.me.oa.entity.ProcessFlow"
+            useGeneratedKeys="true" keyProperty="processId" keyColumn="process_id">
+        INSERT INTO adm_process_flow(form_id, operator_id, action, result, reason,
+                                               create_time, audit_time, order_no, state, is_last)
+        VALUES (#{formId}, #{operatorId}, #{action}, #{result}, #{reason}, #{createTime}, #{auditTime}, #{orderNo}, #{state}, #{isLast})
+    </insert>
+</mapper>

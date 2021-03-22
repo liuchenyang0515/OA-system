@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.me.oa.dao.LeaveFormDao">
+    <!--
+    主键回填
+    useGeneratedKeys="true" 使用数据库的自动生成键
+    keyProperty="formId" 实体类的formId属性对应数据库主键
+    keyColumn="form_id" 数据库主键字段是form_id
+    -->
+    <insert id="insert" parameterType="com.me.oa.entity.LeaveForm"
+            useGeneratedKeys="true" keyProperty="formId" keyColumn="form_id">
+        INSERT INTO adm_leave_form (employee_id, form_type, start_time, end_time, reason,
+                                    create_time, state)
+        VALUES (#{employeeId}, #{formType}, #{startTime}, #{endTime}, #{reason}, #{createTime}, #{state})
+    </insert>
+</mapper>
