@@ -98,11 +98,11 @@ public class LeaveFormServlet extends HttpServlet {
     private void getLeaveFormList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("login_user");
         List<Map> formList = leaveFormService.getLeaveFormList("process", user.getEmployeeId());
-        Map<String, String> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(); // 为了传给前端，value类型才是Object，踩的坑就是formList明明是数组，却加上了""变成了字符串导致无法渲染
         result.put("code", "0");
         result.put("msg", "");
-        result.put("count", String.valueOf(formList.size()));
-        result.put("data", String.valueOf(formList));
+        result.put("count", formList.size());
+        result.put("data", formList);
         String json = JSON.toJSONString(result);
         response.getWriter().println(json);
     }
