@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "LeaveFormServlet", urlPatterns = "/leave/*")
@@ -32,6 +33,8 @@ public class LeaveFormServlet extends HttpServlet {
         String methodName = requestURI.substring(requestURI.lastIndexOf("/") + 1);
         if (methodName.equals("create")) {
             this.create(request, response);
+        } else if (methodName.equals("list")) {
+            this.getLeaveFormList(request, response);
         }
     }
 
@@ -41,6 +44,7 @@ public class LeaveFormServlet extends HttpServlet {
 
     /**
      * 创建请假单
+     *
      * @param request
      * @param response
      * @throws ServletException
@@ -75,6 +79,30 @@ public class LeaveFormServlet extends HttpServlet {
             result.put("message", e.getMessage());
         }
         // 3.组织响应数据
+        String json = JSON.toJSONString(result);
+        response.getWriter().println(json);
+    }
+
+    /**
+     * 查询需要审核的请假单列表
+     * http://localhost/leave/list
+     * <p>
+     * {"msg":"","code":"0","data":"[{start_time=2020-03-26 08:00:00.0, reason=研发部部门经理请假单, create_time=2021-03-23 10:51:57.0,
+     * employee_id=2, department_name=研发部, form_id=40, end_time=2020-04-01 18:00:00.0, name=齐紫陌, form_type=1, state=processing}]","count":"1"}
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void getLeaveFormList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        User user = (User) request.getSession().getAttribute("login_user");
+        List<Map> formList = leaveFormService.getLeaveFormList("process", user.getEmployeeId());
+        Map<String, String> result = new HashMap<>();
+        result.put("code", "0");
+        result.put("msg", "");
+        result.put("count", String.valueOf(formList.size()));
+        result.put("data", String.valueOf(formList));
         String json = JSON.toJSONString(result);
         response.getWriter().println(json);
     }

@@ -9,6 +9,8 @@ import com.me.oa.entity.ProcessFlow;
 import com.me.oa.utils.MybatisUtils;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 请假单流程服务
@@ -109,5 +111,14 @@ public class LeaveFormService {
             return form;
         });
         return savedForm;
+    }
+
+
+    public List<Map> getLeaveFormList(String pfState, Long operatorId) {
+        return (List<Map>) MybatisUtils.executeQuery(sqlSession -> {
+            LeaveFormDao dao = sqlSession.getMapper(LeaveFormDao.class);
+            List<Map> formList = dao.selectByParams(pfState, operatorId);
+            return formList;
+        });
     }
 }
