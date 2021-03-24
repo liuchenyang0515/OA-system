@@ -6,11 +6,13 @@ import com.me.oa.dao.ProcessFlowDao;
 import com.me.oa.entity.Employee;
 import com.me.oa.entity.LeaveForm;
 import com.me.oa.entity.ProcessFlow;
+import com.me.oa.service.exception.BussinessException;
 import com.me.oa.utils.MybatisUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 请假单流程服务
@@ -113,7 +115,13 @@ public class LeaveFormService {
         return savedForm;
     }
 
-
+    /**
+     * 获取指定任务状态及指定经办人对应的请假单列表
+     *
+     * @param pfState    ProcessFlow任务状态
+     * @param operatorId 经办人帐号
+     * @return 请假单及相关数据列表
+     */
     public List<Map> getLeaveFormList(String pfState, Long operatorId) {
         return (List<Map>) MybatisUtils.executeQuery(sqlSession -> {
             LeaveFormDao dao = sqlSession.getMapper(LeaveFormDao.class);
@@ -121,4 +129,42 @@ public class LeaveFormService {
             return formList;
         });
     }
+
+    /**
+     * 审核请假单
+     *
+     * @param formId     表单编号
+     * @param operatorId 经办人(当前登录员工)
+     * @param result     审批结果
+     * @param reason     审批意见
+     */
+    public void audit(Long formId, Long operatorId, String result, String reason) {
+        MybatisUtils.executeUpdate(sqlSession -> {
+            //1.无论同意/驳回,当前任务状态变更为complete
+            ProcessFlowDao processFlowDao = sqlSession.getMapper(ProcessFlowDao.class);
+            List<ProcessFlow> flowList = processFlowDao.selectByFormId(formId);
+            if (flowList.size() == 0) {
+                throw new BussinessException("PF001", "无效的审批流程");
+            }
+            // lambda表达式进行数据筛选
+            // 获取当前任务ProcessFlow对象
+            List<ProcessFlow> processList = flowList.stream().filter(p -> p.getOperatorId() == operatorId && p.getState().equals("process")).collect(Collectors.toList());
+            ProcessFlow process = null;
+            if (processList.size() == 0) {
+                throw new BussinessException("PF002", "未找到待处理任务");
+            } else {
+                process = processList.get(0);
+                process.setState("complete");
+                process.setResult(result);
+                process.setAuditTime(new Date());
+                processFlowDao.update(process);
+            }
+
+            //2.如果当前任务是最后一个节点,代表流程结束,更新请假单状态为对应的approved/refused
+            //3.如果当前任务不是最后一个节点且审批通过,那下一个节点的状态从ready变为process
+            //4.如果当前任务不是最后一个节点且审批驳回,则后续所有任务状态变为cancel,请假单状态变为refused
+            return null;
+        });
+    }
+
 }

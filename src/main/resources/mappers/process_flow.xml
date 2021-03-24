@@ -12,7 +12,31 @@
     <insert id="insert" parameterType="com.me.oa.entity.ProcessFlow"
             useGeneratedKeys="true" keyProperty="processId" keyColumn="process_id">
         INSERT INTO adm_process_flow(form_id, operator_id, action, result, reason,
-                                               create_time, audit_time, order_no, state, is_last)
-        VALUES (#{formId}, #{operatorId}, #{action}, #{result}, #{reason}, #{createTime}, #{auditTime}, #{orderNo}, #{state}, #{isLast})
+                                     create_time, audit_time, order_no, state, is_last)
+        VALUES (#{formId}, #{operatorId}, #{action}, #{result}, #{reason}, #{createTime}, #{auditTime}, #{orderNo},
+                #{state}, #{isLast})
     </insert>
+    <!-- 任务结点的状态进行更新 -->
+    <update id="update" parameterType="com.me.oa.entity.ProcessFlow">
+        UPDATE adm_process_flow
+        SET form_id     = #{formId},
+            operator_id = #{operatorId},
+            action      = #{action},
+            result      = #{result},
+            reason      = #{reason},
+            create_time = #{createTime},
+            audit_time  = #{auditTime},
+            order_no    = #{orderNo},
+            state       = #{state},
+            is_last     = #{isLast}
+        WHERE process_id = #{processId};
+    </update>
+
+    <!-- 根据表单编号查询所有processflow -->
+    <select id="selectByFormId" parameterType="long" resultType="com.me.oa.entity.ProcessFlow">
+        select *
+        from adm_process_flow
+        where form_id = #{value}
+        order by order_no
+    </select>
 </mapper>
