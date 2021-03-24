@@ -132,6 +132,33 @@ public class LeaveFormService {
 
     /**
      * 审核请假单
+     * 测试用例的日志如下，中途审批拒绝，后续取消
+     * ==========下面就是根据formId查询假单流程对象结点processflow，执行了processFlowDao.selectByFormId(formId);========
+     * [main] 15:20:53.970 DEBUG c.m.o.d.P.selectByFormId - ==>  Preparing: select * from adm_process_flow where form_id = ? order by order_no
+     * [main] 15:20:54.078 DEBUG c.m.o.d.P.selectByFormId - ==> Parameters: 32(Long)
+     * [main] 15:20:54.129 DEBUG c.m.o.d.P.selectByFormId - <==      Total: 3
+     * ==========下面就是将当前processflow对象的状态设置为complete状态，然后更新到adm_process_flow表中，执行了processFlowDao.update(process);==============
+     * [main] 15:20:54.132 DEBUG com.me.oa.dao.ProcessFlowDao.update - ==>  Preparing: UPDATE adm_process_flow SET form_id = ?, operator_id = ?,
+     * action = ?, result = ?, reason = ?, create_time = ?, audit_time = ?, order_no = ?, state = ?, is_last = ? WHERE process_id = ?;
+     * [main] 15:20:54.135 DEBUG com.me.oa.dao.ProcessFlowDao.update - ==> Parameters: 32(Long), 2(Long), audit(String), refused(String), null,
+     * 2020-03-28 11:50:35.0(Timestamp), 2021-03-24 15:20:54.131(Timestamp), 2(Integer), complete(String), 0(Integer), 78(Long)
+     * [main] 15:20:54.137 DEBUG com.me.oa.dao.ProcessFlowDao.update - <==    Updates: 1
+     * ==========下面是根据formId查询表单，执行了leaveFormDao.selectById(formId);==================
+     * [main] 15:20:54.140 DEBUG c.me.oa.dao.LeaveFormDao.selectById - ==>  Preparing: select * from adm_leave_form where form_id = ?
+     * [main] 15:20:54.140 DEBUG c.me.oa.dao.LeaveFormDao.selectById - ==> Parameters: 32(Long)
+     * [main] 15:20:54.144 DEBUG c.me.oa.dao.LeaveFormDao.selectById - <==      Total: 1
+     * ==========下面是将后面假单流程对象结点状态变为cancel，然后更新节点，执行了processFlowDao.update(p);=================
+     * [main] 15:20:54.145 DEBUG com.me.oa.dao.ProcessFlowDao.update - ==>  Preparing: UPDATE adm_process_flow SET form_id = ?, operator_id = ?,
+     * action = ?, result = ?, reason = ?, create_time = ?, audit_time = ?, order_no = ?, state = ?, is_last = ? WHERE process_id = ?;
+     * [main] 15:20:54.146 DEBUG com.me.oa.dao.ProcessFlowDao.update - ==> Parameters: 32(Long), 1(Long), audit(String), null, null,
+     * 2020-03-28 11:50:36.0(Timestamp), null, 3(Integer), cancel(String), 1(Integer), 79(Long)
+     * [main] 15:20:54.146 DEBUG com.me.oa.dao.ProcessFlowDao.update - <==    Updates: 1
+     * ==========下面是将假单状态变为refused，然后根据formId更新假单，执行了leaveFormDao.update(form);===================
+     * [main] 15:20:54.147 DEBUG com.me.oa.dao.LeaveFormDao.update - ==>  Preparing: UPDATE adm_leave_form SET employee_id = ?, form_type = ?,
+     * start_time = ?, end_time = ?, reason = ?, create_time = ?, state = ? WHERE form_id = ?;
+     * [main] 15:20:54.148 DEBUG com.me.oa.dao.LeaveFormDao.update - ==> Parameters: 3(Long), 1(Integer), 2020-03-29 00:00:00.0(Timestamp),
+     * 2020-04-04 00:00:00.0(Timestamp), 没啥原因,单纯想休息几天(String), 2020-03-28 11:50:35.0(Timestamp), refused(String), 32(Long)
+     * [main] 15:20:54.149 DEBUG com.me.oa.dao.LeaveFormDao.update - <==    Updates: 1
      *
      * @param formId     表单编号
      * @param operatorId 经办人(当前登录员工)
@@ -140,8 +167,9 @@ public class LeaveFormService {
      */
     public void audit(Long formId, Long operatorId, String result, String reason) {
         MybatisUtils.executeUpdate(sqlSession -> {
-            //1.无论同意/驳回,当前任务状态变更为complete
+            // 1.无论同意/驳回,当前任务状态变更为complete
             ProcessFlowDao processFlowDao = sqlSession.getMapper(ProcessFlowDao.class);
+            // 根据表单id能得到多个审批流程的记录,有各种状态ready-准备 process-正在处理 complete-处理完成 cancel-取消
             List<ProcessFlow> flowList = processFlowDao.selectByFormId(formId);
             if (flowList.size() == 0) {
                 throw new BussinessException("PF001", "无效的审批流程");
@@ -160,11 +188,30 @@ public class LeaveFormService {
                 processFlowDao.update(process);
             }
 
-            //2.如果当前任务是最后一个节点,代表流程结束,更新请假单状态为对应的approved/refused
-            //3.如果当前任务不是最后一个节点且审批通过,那下一个节点的状态从ready变为process
-            //4.如果当前任务不是最后一个节点且审批驳回,则后续所有任务状态变为cancel,请假单状态变为refused
+            // 2.如果当前任务是最后一个节点,代表流程结束,更新请假单状态为对应的approved/refused
+            LeaveFormDao leaveFormDao = sqlSession.getMapper(LeaveFormDao.class);
+            LeaveForm form = leaveFormDao.selectById(formId);
+            if (process.getIsLast() == 1) {
+                form.setState(result); // approved|refused
+                leaveFormDao.update(form);
+            } else {
+                List<ProcessFlow> readyList = flowList.stream().filter(p -> p.getState().equals("ready")).collect(Collectors.toList());
+                // 3.如果当前任务不是最后一个节点且审批通过,那下一个节点的状态从ready变为process
+                if (result.equals("approved")) {
+                    ProcessFlow readyProcess = readyList.get(0);
+                    readyProcess.setState("process");
+                    processFlowDao.update(readyProcess);
+                } else if (result.equals("refused")) {
+                    // 4.如果当前任务不是最后一个节点且审批驳回,则后续所有任务状态变为cancel,请假单状态变为refused
+                    for (ProcessFlow p : readyList) {
+                        p.setState("cancel");
+                        processFlowDao.update(p);
+                    }
+                    form.setState("refused");
+                    leaveFormDao.update(form);
+                }
+            }
             return null;
         });
     }
-
 }

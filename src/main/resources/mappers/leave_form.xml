@@ -27,4 +27,21 @@
           AND pf.state = #{pf_state}
           AND pf.operator_id = #{pf_operator_id}
     </select>
+    <select id="selectById" parameterType="long" resultType="com.me.oa.entity.LeaveForm">
+        select *
+        from adm_leave_form
+        where form_id = #{value}
+    </select>
+
+    <update id="update" parameterType="com.me.oa.entity.LeaveForm">
+        UPDATE adm_leave_form
+        SET employee_id = #{employeeId},
+            form_type   = #{formType},
+            start_time  = #{startTime},
+            end_time    = #{endTime},
+            reason      = #{reason},
+            create_time = #{createTime},
+            state       = #{state}
+        WHERE form_id = #{formId};
+    </update>
 </mapper>
