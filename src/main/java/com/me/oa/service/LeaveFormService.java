@@ -184,6 +184,7 @@ public class LeaveFormService {
                 process = processList.get(0);
                 process.setState("complete");
                 process.setResult(result);
+                process.setReason(reason);
                 process.setAuditTime(new Date());
                 processFlowDao.update(process);
             }

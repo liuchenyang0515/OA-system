@@ -35,6 +35,8 @@ public class LeaveFormServlet extends HttpServlet {
             this.create(request, response);
         } else if (methodName.equals("list")) {
             this.getLeaveFormList(request, response);
+        } else if (methodName.equals("audit")) {
+            this.audit(request, response);
         }
     }
 
@@ -104,6 +106,33 @@ public class LeaveFormServlet extends HttpServlet {
         result.put("count", formList.size());
         result.put("data", formList);
         String json = JSON.toJSONString(result);
+        response.getWriter().println(json);
+    }
+
+    /**
+     * 处理审批操作
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void audit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String formId = request.getParameter("formId");
+        String result = request.getParameter("result");
+        String reason = request.getParameter("reason");
+        User user = (User) request.getSession().getAttribute("login_user");
+        Map<String, String> mapResult = new HashMap<>();
+        try {
+            leaveFormService.audit(Long.parseLong(formId), user.getEmployeeId(), result, reason);
+            mapResult.put("code", "0");
+            mapResult.put("message", "success");
+        } catch (Exception e) {
+            logger.error("请假单审核失败", e);
+            mapResult.put("code", e.getClass().getSimpleName());
+            mapResult.put("message", e.getMessage());
+        }
+        String json = JSON.toJSONString(mapResult);
         response.getWriter().println(json);
     }
 }
